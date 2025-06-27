@@ -1,7 +1,7 @@
 import multiprocessing
 from pydantic import PostgresDsn
 from pydantic_settings import BaseSettings
-from pydantic import Field  # Импортируем Field
+from pydantic import Field
 import os
 from dotenv import load_dotenv
 from pydantic_core import MultiHostUrl

@@ -1,26 +1,20 @@
 import asyncio
-from parser import fetch_wb_products, save_to_db
-from models import Product
-from database import Base, engine
+import logging
+from config import uvicorn_options
+from api import api_router
 from fastapi import FastAPI, Request
+import uvicorn
+
+
+
 
 
 app = FastAPI(
     docs_url="/api/openapi"
 )
 
-async def main():
-    # Создаем таблицы
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+app.include_router(api_router)
 
-    query =  'кроссовки'
-    items = fetch_wb_products(query, max_pages=1)
-
-    if items:
-        await save_to_db(items)
-    else:
-        print("Не удалось получить товары.")
-
-if __name__ == "__main__":
-    asyncio.run(main())
+if __name__ == '__main__':
+    print(uvicorn_options)
+    uvicorn.run("main:app", host="0.0.0.0", port=8010, reload=True)
