@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: wb_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${FSTR_DB_LOGIN}
+      POSTGRES_PASSWORD: ${FSTR_DB_PASS}
+      POSTGRES_DB: ${FSTR_DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  app:
+    build: .
+    container_name: wb_app
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ["python", "-u", "backend/main.py"]
+    depends_on:
+      - postgres
+    environment:
+      FSTR_DB_HOST: postgres
+      FSTR_DB_PORT: 5432
+      FSTR_DB_LOGIN: ${FSTR_DB_LOGIN}
+      FSTR_DB_PASS: ${FSTR_DB_PASS}
+      FSTR_DB_NAME: ${FSTR_DB_NAME}
+    networks:
+      - app-network
+    ports:
+      - "8010:8010"
+
+volumes:
+  pg_data:
+
+networks:
+  app-network:
