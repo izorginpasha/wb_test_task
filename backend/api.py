@@ -6,7 +6,7 @@ from crud_product import save_to_db
 from parser import fetch_wb_products
 from sqlalchemy import select, and_
 
-api_router = APIRouter(prefix="/products", tags=['products'])
+api_router = APIRouter(prefix="/api/products", tags=['products'])
 
 @api_router.get("/", response_model=list[ProductResponse])
 async def get_products(
@@ -32,7 +32,13 @@ async def get_products(
 
     # Если подходящих товаров нет — загрузка с WB
     if not products:
-        new_products = fetch_wb_products(name)
+        new_products = fetch_wb_products(
+            query=name,
+            min_price=min_price,
+            max_price=max_price,
+            min_rating=min_rating,
+            min_feedbacks=min_feedbacks
+        )
         for item in new_products:
             db.add(Product(**item))
         await db.commit()

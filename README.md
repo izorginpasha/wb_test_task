@@ -1,1 +1,0 @@
-# wb_test_task
